@@ -27,6 +27,7 @@ namespace Microsoft.EntityFrameworkCore.Infrastructure
             var modelBuilder = CreateConventionalModelBuilder();
             modelBuilder.Entity<Customer>().ToContainer("Orders").HasPartitionKey(c => c.PartitionId);
             modelBuilder.Entity<Order>().ToContainer("Orders").HasPartitionKey(o => o.PartitionId)
+                .OwnsOne(o => o.OrderDetails, db => { })
                 .Property(o => o.PartitionId).HasConversion<string>();
 
             var model = modelBuilder.Model;
@@ -142,6 +143,12 @@ namespace Microsoft.EntityFrameworkCore.Infrastructure
             public int Id { get; set; }
             public string PartitionId { get; set; }
             public Customer Customer { get; set; }
+            public OrderDetails OrderDetails { get; set; }
+        }
+
+        private class OrderDetails
+        {
+            public string ShippingAddress { get; set; }
         }
     }
 }
